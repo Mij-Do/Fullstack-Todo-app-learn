@@ -12,9 +12,9 @@ const Navbar = () => {
     }, 1500);
   };
   return (
-    <nav className="max-w-lg mx-auto mt-7 mb-20 px-3 py-5 rounded-md">
+    <nav className="max-w-lg mx-auto mt-7 mb-20 px-3 py-5 rounded-md bg-indigo-800 text-white">
       <ul className="flex items-center justify-between">
-        <li className="text-black duration-200 font-semibold text-lg">
+        <li className="duration-200 font-semibold text-lg hover:text-indigo-300">
           <NavLink to="/">Home</NavLink>
         </li>
         {userData ? (
@@ -34,10 +34,10 @@ const Navbar = () => {
           </div>
         ) : (
           <p className="flex items-center space-x-3">
-            <li className="text-black duration-200 font-semibold text-lg">
+            <li className="duration-200 font-semibold text-lg hover:text-indigo-300">
               <NavLink to="/register">Register</NavLink>
             </li>
-            <li className="text-black duration-200 font-semibold text-lg">
+            <li className="duration-200 font-semibold text-lg hover:text-indigo-300">
               <NavLink to="/login">Login</NavLink>
             </li>
           </p>
