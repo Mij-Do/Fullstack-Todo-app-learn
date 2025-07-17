@@ -12,7 +12,7 @@ const Navbar = () => {
     }, 1500);
   };
   return (
-    <nav className="max-w-lg mx-auto mt-7 mb-20 px-3 py-5 rounded-md bg-indigo-800 text-white">
+    <nav className="max-w-lg mx-auto mt-7 mb-20 px-3 py-5 rounded-md bg-indigo-700 text-white">
       <ul className="flex items-center justify-between">
         <li className="duration-200 font-semibold text-lg hover:text-indigo-300">
           <NavLink to="/">Home</NavLink>
