@@ -1,6 +1,10 @@
 import Button from "../components/ui/Button";
 import Input from "../components/ui/Input";
 import { useForm, SubmitHandler } from "react-hook-form"
+import InputErrorMessage from "../components/ui/InputErrorMessage";
+import { REGISTER_FORM } from "../data";
+import { yupResolver } from "@hookform/resolvers/yup";
+import { registerSchema } from "../validation";
 
 interface IFormInput {
   username: string;
@@ -9,10 +13,20 @@ interface IFormInput {
 }
 
 const RegisterPage = () => {
-    const { register, handleSubmit, formState: {errors} } = useForm<IFormInput>()
+    const { register, handleSubmit, formState: {errors} } = useForm<IFormInput>({
+      resolver: yupResolver(registerSchema),
+    })
     const onSubmit: SubmitHandler<IFormInput> = (data) => console.log(data)
 
     console.log(errors)
+
+    // Render
+    const renderRegisterInputs = REGISTER_FORM.map(({name, placeholder, type, validation}, idx) => 
+      <div key={idx}>
+          <Input placeholder={placeholder} type={type} {...register(name, validation)}/>
+          {errors[name] && <InputErrorMessage msg={errors[name]?.message}/>}
+      </div>
+    )
 
     return (
     <div className="max-w-md mx-auto">
@@ -20,9 +34,7 @@ const RegisterPage = () => {
         Register to get access!
       </h2>
       <form className="space-y-4"  onSubmit={handleSubmit(onSubmit)}>
-        <Input placeholder="Username" {...register("username", {required: 'Username Is Required!'})}/>
-        <Input placeholder="Email address" {...register("email", {required: 'Email Is Required!'})}/>
-        <Input placeholder="Password" {...register("password", {required: 'Password Is Required!'})}/>
+        {renderRegisterInputs}
         <Button fullWidth>
           Register
         </Button>

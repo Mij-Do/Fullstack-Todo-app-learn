@@ -26,6 +26,7 @@ export const REGISTER_FORM: IRegisterInput[] = [
     validation: {
       required: true,
       minLength: 6,
+      pattern: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/,
     },
   },
 ];
