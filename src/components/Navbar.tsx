@@ -8,7 +8,12 @@ const Navbar = () => {
   const userData = userDataString ? JSON.parse(userDataString) : null;
   const onLogout = () => {
     localStorage.removeItem(storageKey);
-    toast.success("Logged Out Successfully");
+    toast.success("Logged Out Successfully", {
+            style: {
+              backgroundColor: 'black',
+              color: 'white',
+            }
+          });
     setTimeout(() => {
       location.replace(pathname);
     }, 1500);
