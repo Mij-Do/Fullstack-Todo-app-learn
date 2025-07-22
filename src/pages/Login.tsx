@@ -26,7 +26,7 @@ const LoginPage = () => {
   const onSubmit: SubmitHandler<IFormInput> = async (data) => {
       setIsLoading(true);
       try {
-        const {status} = await AxiosInstance.post('/auth/local/', data);
+        const {status, data: resData} = await AxiosInstance.post('/auth/local/', data);
         if (status === 200) {
           toast.success('Your Login is Done !!', {
             style: {
@@ -35,6 +35,13 @@ const LoginPage = () => {
             }
           });
         }
+
+        localStorage.setItem("loggedInUser", JSON.stringify(resData));
+
+        setTimeout(() => {
+          location.replace('/');
+        }, 1500);
+
       } catch (error) {
         const errObj = error as AxiosError<IErrorResponse>;
         toast.error(`${errObj.response?.data.error.message}`, {

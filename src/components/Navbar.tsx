@@ -1,3 +1,4 @@
+import toast from "react-hot-toast";
 import { NavLink, useLocation } from "react-router-dom";
 
 const Navbar = () => {
@@ -7,6 +8,7 @@ const Navbar = () => {
   const userData = userDataString ? JSON.parse(userDataString) : null;
   const onLogout = () => {
     localStorage.removeItem(storageKey);
+    toast.success("Logged Out Successfully");
     setTimeout(() => {
       location.replace(pathname);
     }, 1500);
