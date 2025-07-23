@@ -1,6 +1,6 @@
-import { useEffect, useState } from "react";
 import Button from "./ui/Button";
 import AxiosInstance from "../config/axios.config";
+import { useQuery } from "@tanstack/react-query";
 
 
 const TodoList = () => {
@@ -8,22 +8,22 @@ const TodoList = () => {
   const userDataString = localStorage.getItem(storageKey);
   const userData = userDataString ? JSON.parse(userDataString) : null;
 
-  const [todoToAdd, setTodoToAdd] = useState([]);
-
-  useEffect(() => {
-    try {
-      AxiosInstance.get('/users/me?populate=todos', {
-        headers: {
+  const {isLoading, data} = useQuery({
+    queryKey: ["todos"],
+    queryFn: async () => {
+      const {data} = await AxiosInstance.get("/users/me?populate=todos", {
+        headers: { 
           Authorization: `Bearer ${userData.jwt}`
         }
-      }).then (res => setTodoToAdd(res.data.todos)).catch(err => console.log(`My err: ${err}`))
-    } catch (error) {
-      console.log(error)
+      });
+      return data;
     }
-  }, [userData.jwt]);
+  });
+  
+  if (isLoading) return <h3> Is Loading ... </h3>
 
   // Render
-  const renderToDos = todoToAdd.map(todo => 
+  const renderToDos = data.todos.map(todo => 
     <div key={todo.id} className="flex items-center justify-between hover:bg-gray-100 duration-300 p-3 rounded-md even:bg-gray-100">
       <p className="w-full font-semibold"> {todo.title} </p>
       <div className="flex items-center justify-end w-full space-x-3">
@@ -32,9 +32,11 @@ const TodoList = () => {
       </div>
     </div>
   )
+
+
   return (
     <div className="space-y-1 ">
-      {renderToDos}
+      {data.todos.length ? renderToDos : <h3>No ToDos yet!!</h3>}
     </div>
   );
 };
