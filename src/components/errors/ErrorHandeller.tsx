@@ -50,3 +50,5 @@ const ErrorHandler = ({ statusCode = 500, title = "Server Error" }: IProps) => {
         </div>
     );
 };
+
+export default ErrorHandler;
