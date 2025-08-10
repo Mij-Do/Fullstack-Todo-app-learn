@@ -1,0 +1,1 @@
+export type TInputName = "username" | "email" | "password";
