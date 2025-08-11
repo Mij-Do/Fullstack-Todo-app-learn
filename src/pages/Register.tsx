@@ -8,6 +8,8 @@ import { registerSchema } from "../validation";
 import axiosInstance from "../config/axios.instance";
 import { useState } from "react";
 import toast from "react-hot-toast";
+import type { AxiosError } from "axios";
+import type { IErrorResponse } from "../interfaces";
 
 interface IFormInput {
     username: string;
@@ -39,7 +41,18 @@ const RegisterPage = () => {
                     }
                 )};
         } catch (error) {
-            console.log(error);
+            const errObj = error as AxiosError<IErrorResponse>;
+            toast.error (`${errObj.response?.data.error.message}`,
+                {
+                    position: "bottom-center",
+                    duration: 1500,
+                    style: {
+                        backgroundColor: "black",
+                        color: "white",
+                        width: "fit-content",
+                    },
+                }
+            );
         } finally {
             setIsLoading(false);
         }

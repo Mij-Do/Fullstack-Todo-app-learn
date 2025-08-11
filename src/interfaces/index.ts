@@ -22,3 +22,14 @@ export interface ILoginInput {
         pattern?: RegExp;
     },
 }
+
+export interface IErrorResponse {
+    error: {
+        details?: {
+            errors: {
+                message: string;
+            }[];
+        };
+        message?: string;
+    };
+}
