@@ -24,10 +24,10 @@ const LoginPage = () => {
     const onSubmit: SubmitHandler<IFormInput> = async (data) => {
             setIsLoading(true);
             try {
-                const {status} = await axiosInstance.post("/auth/local/", data);
+                const {status, data: resData} = await axiosInstance.post("/auth/local/", data);
                 if (status === 200) {
                     toast.success(
-                        "You will navigate to the Home page after 2 seconds from loggedin.",
+                        "You will navigate to the Home page after 2 seconds.",
                         {
                             position: "bottom-center",
                             duration: 1500,
@@ -38,6 +38,10 @@ const LoginPage = () => {
                             },
                         }
                     )};
+                localStorage.setItem("loggedInUser", JSON.stringify(resData));
+                setTimeout(() => {
+                    location.replace("/");
+                }, 2000)
             } catch (error) {
                 const errObj = error as AxiosError<IErrorResponse>;
                 toast.error (`${errObj.response?.data.error.message}`,
