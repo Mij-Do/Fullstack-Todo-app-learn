@@ -1,7 +1,7 @@
-import type { TInputName } from "../types";
+import type { TInputLoginName, TInputRegisterName } from "../types";
 
 export interface IRegisterInput {
-    name: TInputName;
+    name: TInputRegisterName;
     placeholder: string;
     type: string;
     validation: {
@@ -13,7 +13,7 @@ export interface IRegisterInput {
 
 
 export interface ILoginInput {
-    name: string;
+    name: TInputLoginName;
     placeholder: string;
     type: string;
     validation: {

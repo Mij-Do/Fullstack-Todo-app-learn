@@ -16,7 +16,7 @@ export const REGISTER_FORM: IRegisterInput[] = [
         type: "email",
         validation: {
             required: true,
-            pattern: /^[^@ ]+@[^@ ]+\.[^@ .]{2,}$/,
+            pattern: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
         },
     },
     {
@@ -26,6 +26,7 @@ export const REGISTER_FORM: IRegisterInput[] = [
         validation: {
             required: true,
             minLength: 6,
+            pattern: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/,
         },
     },
 ];
@@ -37,7 +38,7 @@ export const LOGIN_FORM: ILoginInput[] = [
         type: "email",
         validation: {
             required: true,
-            pattern: /^[^@ ]+@[^@ ]+\.[^@ .]{2,}$/,
+            pattern: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
         },
     },
     {

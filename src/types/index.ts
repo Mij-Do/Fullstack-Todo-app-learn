@@ -1,1 +1,2 @@
-export type TInputName = "username" | "email" | "password";
+export type TInputRegisterName = "username" | "email" | "password";
+export type TInputLoginName = "identifier" | "password";

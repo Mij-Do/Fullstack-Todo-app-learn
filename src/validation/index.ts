@@ -14,3 +14,14 @@ export const registerSchema = yup
         .matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/, "Password Is Weak!")
     })
     .required();
+
+export const loginSchema = yup
+.object({
+    identifier: yup.string()
+    .required("Email is Required!")
+    .matches(/^[^\s@]+@[^\s@]+\.[^\s@]+$/, "Email is not Valid!"),
+    password: yup.string()
+    .required("Password is Required!")
+    .min(6, "Password should be more than 8 characters!")
+})
+.required();
