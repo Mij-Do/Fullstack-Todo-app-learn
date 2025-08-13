@@ -1,6 +1,5 @@
-import { useQuery } from "@tanstack/react-query";
 import Button from "../components/ui/Button";
-import axiosInstance from "../config/axios.instance";
+import useAuthQuery from "../hooks";
 
 const TodoList = () => {
     // states
@@ -8,15 +7,11 @@ const TodoList = () => {
     const userDataString = localStorage.getItem(storageKey);
     const userData = userDataString ? JSON.parse(userDataString) : null;
 
-    const {isLoading, data} = useQuery({
+    const {isLoading, data} = useAuthQuery({
         queryKey: ["todos"],
-        queryFn: async () => {
-            const {data} = await axiosInstance.get("/users/me?populate=todos", {
-                headers: {
-                    Authorization: `Bearer ${userData.jwt}`
-                }
-            });
-            return data;
+        url: "/users/me?populate=todos",
+        config: {
+            headers: {Authorization: `Bearer ${userData.jwt}`}
         }
     }); 
 
