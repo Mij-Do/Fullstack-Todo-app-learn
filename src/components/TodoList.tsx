@@ -6,6 +6,9 @@ import Input from "./ui/Input";
 import Modal from "./ui/Modal";
 import Textarea from "./ui/TextArea";
 import axiosInstance from "../config/axios.instance";
+import toast from "react-hot-toast";
+import { updateInputValidation } from "../validation";
+import InputErrorMsg from "./ui/InputErrorMsg";
 
 const TodoList = () => {
     const defaultTodos = {
@@ -18,6 +21,10 @@ const TodoList = () => {
     const [isOpen, setIsOpen] = useState(false);
     const [isUpdating, setIsUpdating] = useState(false);
     const [todoToEdit, setTodoToEdit] = useState<ITodo>(defaultTodos);
+    const [errors, setErrors] = useState({
+        title: '',
+        description: ''
+    });
 
     const storageKey = "loggedInUser";
     const userDataString = localStorage.getItem(storageKey);
@@ -35,7 +42,19 @@ const TodoList = () => {
 
     const onSubmitHandeller = async (evt: FormEvent<HTMLFormElement>) => {
         evt.preventDefault();
+
+        const errors = updateInputValidation({
+            title: todoToEdit.title,
+            description: todoToEdit.description,
+        });
+        const hasMsgError = Object.values(errors).some(value => value === '') 
+                            && Object.values(errors).every(value => value === '');
+        if (!hasMsgError) {
+            setErrors(errors);
+            return;
+        }
         setIsUpdating(true);
+
         try {
             const {status} = await axiosInstance.put(`/todos/${todoToEdit.documentId}`, 
                 {data: {title: todoToEdit.title, description: todoToEdit.description}},
@@ -47,6 +66,18 @@ const TodoList = () => {
             )
             if (status === 200) {
                 onCloseEditModal();
+                toast.success(
+                    "Your todo is Updated!.",
+                    {
+                        position: "bottom-center",
+                        duration: 1500,
+                        style: {
+                        backgroundColor: "black",
+                        color: "white",
+                        width: "fit-content",
+                        },
+                    }
+                )
             }
         } catch (error) {
             console.log(error)
@@ -61,7 +92,12 @@ const TodoList = () => {
         setTodoToEdit({
             ...todoToEdit,
             [name]: value,
-        })
+        });
+
+        setErrors({
+            ...errors,
+            [name]: '',
+        });
     }
 
     const {isLoading, data} = useAuthQuery({
@@ -87,7 +123,9 @@ const TodoList = () => {
             <Modal isOpen={isOpen} onClose={onCloseEditModal} title="Edit Todos!">
                 <form className="space-y-3" onSubmit={onSubmitHandeller}> 
                     <Input name="title" value={todoToEdit.title} onChange={onChangeHandeller}/>
+                    {errors.title && <InputErrorMsg msg={errors.title}/>}
                     <Textarea name="description" value={todoToEdit.description} onChange={onChangeHandeller}/>
+                    {errors.description && <InputErrorMsg msg={errors.description}/>}
                     <div className="flex items-center space-x-3">
                         <Button fullWidth isLoading={isUpdating}>Update</Button>
                         <Button fullWidth variant={"cancel"} onClick={onCloseEditModal}>Cancel</Button>
