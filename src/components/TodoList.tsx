@@ -1,19 +1,22 @@
-import { useState } from "react";
+import { useState, type ChangeEvent, type FormEvent } from "react";
 import Button from "../components/ui/Button";
 import useAuthQuery from "../hooks";
 import type ITodo from "../interfaces";
 import Input from "./ui/Input";
 import Modal from "./ui/Modal";
 import Textarea from "./ui/TextArea";
+import axiosInstance from "../config/axios.instance";
 
 const TodoList = () => {
     const defaultTodos = {
         id: 0,
+        documentId: "",
         title: "",
         description: ""
     }
     // states
     const [isOpen, setIsOpen] = useState(false);
+    const [isUpdating, setIsUpdating] = useState(false);
     const [todoToEdit, setTodoToEdit] = useState<ITodo>(defaultTodos);
 
     const storageKey = "loggedInUser";
@@ -30,8 +33,39 @@ const TodoList = () => {
         setIsOpen(false);
     }
 
+    const onSubmitHandeller = async (evt: FormEvent<HTMLFormElement>) => {
+        evt.preventDefault();
+        setIsUpdating(true);
+        try {
+            const {status} = await axiosInstance.put(`/todos/${todoToEdit.documentId}`, 
+                {data: {title: todoToEdit.title, description: todoToEdit.description}},
+                {
+                    headers: {
+                        Authorization: `Bearer ${userData.jwt}`
+                    }
+                }
+            )
+            if (status === 200) {
+                onCloseEditModal();
+            }
+        } catch (error) {
+            console.log(error)
+        } finally {
+            setIsUpdating(false);
+        }
+    }
+
+    const onChangeHandeller = (evt: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+        const {name, value} = evt.target;
+
+        setTodoToEdit({
+            ...todoToEdit,
+            [name]: value,
+        })
+    }
+
     const {isLoading, data} = useAuthQuery({
-        queryKey: ["todos"],
+        queryKey: ["todos", todoToEdit.documentId],
         url: "/users/me?populate=todos",
         config: {
             headers: {Authorization: `Bearer ${userData.jwt}`}
@@ -51,14 +85,14 @@ const TodoList = () => {
                 </div>
             )) : <h3> No Todos yet! </h3>}
             <Modal isOpen={isOpen} onClose={onCloseEditModal} title="Edit Todos!">
-                <div className="space-y-3"> 
-                    <Input value={todoToEdit.title}/>
-                    <Textarea value={todoToEdit.description}/>
+                <form className="space-y-3" onSubmit={onSubmitHandeller}> 
+                    <Input name="title" value={todoToEdit.title} onChange={onChangeHandeller}/>
+                    <Textarea name="description" value={todoToEdit.description} onChange={onChangeHandeller}/>
                     <div className="flex items-center space-x-3">
-                        <Button fullWidth>Update</Button>
+                        <Button fullWidth isLoading={isUpdating}>Update</Button>
                         <Button fullWidth variant={"cancel"} onClick={onCloseEditModal}>Cancel</Button>
                     </div>
-                </div>
+                </form>
             </Modal>
         </div>
     )
