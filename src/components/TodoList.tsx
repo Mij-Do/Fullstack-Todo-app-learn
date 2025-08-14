@@ -249,7 +249,7 @@ const TodoList = () => {
                     {errors.description && <InputErrorMsg msg={errors.description}/>}
                     <div className="flex items-center space-x-3">
                         <Button fullWidth isLoading={isUpdating}>Add</Button>
-                        <Button fullWidth variant={"cancel"} onClick={onCloseAddModal}>Cancel</Button>
+                        <Button fullWidth type={"button"} variant={"cancel"} onClick={onCloseAddModal}>Cancel</Button>
                     </div>
                 </form>
             </Modal>
@@ -263,7 +263,7 @@ const TodoList = () => {
                     {errors.description && <InputErrorMsg msg={errors.description}/>}
                     <div className="flex items-center space-x-3">
                         <Button fullWidth isLoading={isUpdating}>Update</Button>
-                        <Button fullWidth variant={"cancel"} onClick={onCloseEditModal}>Cancel</Button>
+                        <Button fullWidth type={"button"} variant={"cancel"} onClick={onCloseEditModal}>Cancel</Button>
                     </div>
                 </form>
             </Modal>
@@ -277,7 +277,7 @@ const TodoList = () => {
                 <div className="space-y-3"> 
                     <div className="flex items-center space-x-3">
                         <Button fullWidth variant={"danger"} isLoading={isUpdating} onClick={onRemove}>Yes, Remove</Button>
-                        <Button fullWidth variant={"cancel"} onClick={onCloseDeleteModal}>Cancel</Button>
+                        <Button fullWidth type={"button"} variant={"cancel"} onClick={onCloseDeleteModal}>Cancel</Button>
                     </div>
                 </div>
             </Modal>
