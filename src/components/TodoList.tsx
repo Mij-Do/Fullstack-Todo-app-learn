@@ -41,10 +41,17 @@ const TodoList = () => {
         setIsOpen(false);
     }
 
-    const onOpenDeleteModal = () => setIsOpenDeleteModal(true);
-    const onCloseDeleteModal = () => setIsOpenDeleteModal(false);
+    const onOpenDeleteModal = (todo: ITodo) => {
+        setTodoToEdit(todo);
+        setIsOpenDeleteModal(true);
+    };
+    const onCloseDeleteModal = () => {
+        setTodoToEdit(defaultTodos);
+        setIsOpenDeleteModal(false)
+    };
 
 
+    // update todos
     const onSubmitHandeller = async (evt: FormEvent<HTMLFormElement>) => {
         evt.preventDefault();
 
@@ -91,6 +98,36 @@ const TodoList = () => {
         }
     }
 
+    // remove todos
+    const onRemove = async () => {
+        try {
+            const {status} = await axiosInstance.delete(`/todos/${todoToEdit.documentId}`,
+                {
+                    headers: {
+                        Authorization: `Bearer ${userData.jwt}`
+                    }
+                }
+            )
+        if (status === 200 || 204) {
+                onCloseDeleteModal();
+                toast.success(
+                    "Your todo is Removed!.",
+                    {
+                        position: "bottom-center",
+                        duration: 1500,
+                        style: {
+                        backgroundColor: "black",
+                        color: "white",
+                        width: "fit-content",
+                        },
+                    }
+                )
+            }
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
     const onChangeHandeller = (evt: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         const {name, value} = evt.target;
 
@@ -118,10 +155,10 @@ const TodoList = () => {
         <div className="space-y-1">
             {data.todos.length ? data.todos.map((todo: ITodo) => (
                 <div key={todo.id} className="flex items-center justify-between hover:bg-gray-100 duration-300 p-3 rounded-md even:bg-gray-100">
-                    <p className="w-full font-semibold">1- {todo.title}</p>
+                    <p className="w-full font-semibold">{todo.id}- {todo.title}</p>
                     <div className="flex items-center justify-end w-full space-x-3">
                         <Button size={"sm"} onClick={() => onOpenEditModal(todo)}>Edit</Button>
-                        <Button variant={"danger"} size={"sm"} onClick={onOpenDeleteModal}>Remove</Button>
+                        <Button variant={"danger"} size={"sm"} onClick={() => onOpenDeleteModal(todo)}>Remove</Button>
                     </div>
                 </div>
             )) : <h3> No Todos yet! </h3>}
@@ -148,7 +185,7 @@ const TodoList = () => {
                 >
                 <div className="space-y-3"> 
                     <div className="flex items-center space-x-3">
-                        <Button fullWidth variant={"danger"} isLoading={isUpdating}>Yes, Remove</Button>
+                        <Button fullWidth variant={"danger"} isLoading={isUpdating} onClick={onRemove}>Yes, Remove</Button>
                         <Button fullWidth variant={"cancel"} onClick={onCloseDeleteModal}>Cancel</Button>
                     </div>
                 </div>
