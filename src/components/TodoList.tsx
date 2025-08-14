@@ -10,6 +10,8 @@ import toast from "react-hot-toast";
 import { updateInputValidation } from "../validation";
 import InputErrorMsg from "./ui/InputErrorMsg";
 import TodoSkeleton from "./TodoSkeleton";
+import { faker } from '@faker-js/faker';
+
 
 const TodoList = () => {
     const defaultTodos = {
@@ -68,7 +70,25 @@ const TodoList = () => {
         setIsOpenDeleteModal(false)
     };
 
-    // update todos
+
+    const onGenerateFake = async () => {
+        for (let i = 0; i < 100; i++) {
+            try {
+                await axiosInstance.post(`/todos`, 
+                    {data: {title: faker.word.adjective(3), description: faker.word.adjective(10), user: [userData.user.id]}},
+                    {
+                        headers: {
+                            Authorization: `Bearer ${userData.jwt}`
+                        }
+                    }
+                )
+            } catch (error) {
+                console.log(error)
+            }
+        }
+    }
+
+    // add todos
     const onSubmitAddHandeller = async (evt: FormEvent<HTMLFormElement>) => {
         evt.preventDefault();
 
@@ -222,6 +242,9 @@ const TodoList = () => {
         }
     }); 
     if (isLoading) return <div className="space-y-1">
+        <div className="mb-10 flex justify-center">
+            <div className=" w-20 h-9 bg-gray-300 rounded-md dark:bg-gray-500"></div>
+        </div>
         {Array.from({length: 3}, (_, idx) => <TodoSkeleton key={idx}/>)}
     </div>
     
@@ -229,7 +252,7 @@ const TodoList = () => {
         <div className="space-y-1">
             <div className="flex justify-center space-x-3 mb-10">
                 <Button size={"sm"} variant={"default"} onClick={onOpenAddModal}>Post a new Todo</Button>
-                <Button size={"sm"} variant={"default"}>Generate Todo</Button>
+                <Button size={"sm"} variant={"default"} onClick={onGenerateFake}>Generate Todo</Button>
             </div>
             {data.todos.length ? data.todos.map((todo: ITodo) => (
                 <div key={todo.id} className="flex items-center justify-between hover:bg-gray-100 duration-300 p-3 rounded-md even:bg-gray-100">
