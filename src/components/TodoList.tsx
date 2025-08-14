@@ -9,6 +9,7 @@ import axiosInstance from "../config/axios.instance";
 import toast from "react-hot-toast";
 import { updateInputValidation } from "../validation";
 import InputErrorMsg from "./ui/InputErrorMsg";
+import TodoSkeleton from "./TodoSkeleton";
 
 const TodoList = () => {
     const defaultTodos = {
@@ -19,9 +20,14 @@ const TodoList = () => {
     }
     // states
     const [isOpen, setIsOpen] = useState(false);
+    const [isOpenAddModal, setIsOpenAddModal] = useState(false);
     const [isOpenDeleteModal, setIsOpenDeleteModal] = useState(false);
     const [isUpdating, setIsUpdating] = useState(false);
     const [todoToEdit, setTodoToEdit] = useState<ITodo>(defaultTodos);
+    const [todoToAdd, setTodoToAdd] = useState({
+        title: "",
+        description: "",
+    });
     const [errors, setErrors] = useState({
         title: '',
         description: ''
@@ -32,6 +38,17 @@ const TodoList = () => {
     const userData = userDataString ? JSON.parse(userDataString) : null;
 
     // Handellers
+    const onOpenAddModal = () => {
+        setIsOpenAddModal(true)
+    }
+    const onCloseAddModal = () => {
+        setTodoToAdd({
+            title: "",
+            description: "",
+        });
+        setIsOpenAddModal(false);
+    }
+
     const onOpenEditModal = (todo: ITodo) => {
         setTodoToEdit(todo);
         setIsOpen(true)
@@ -50,6 +67,52 @@ const TodoList = () => {
         setIsOpenDeleteModal(false)
     };
 
+    // update todos
+    const onSubmitAddHandeller = async (evt: FormEvent<HTMLFormElement>) => {
+        evt.preventDefault();
+
+        const errors = updateInputValidation({
+            title: todoToAdd.title,
+            description: todoToAdd.description,
+        });
+        const hasMsgError = Object.values(errors).some(value => value === '') 
+                            && Object.values(errors).every(value => value === '');
+        if (!hasMsgError) {
+            setErrors(errors);
+            return;
+        }
+        setIsUpdating(true);
+
+        try {
+            const {status} = await axiosInstance.post(`/todos`, 
+                {data: {title: todoToAdd.title, description: todoToAdd.description}},
+                {
+                    headers: {
+                        Authorization: `Bearer ${userData.jwt}`
+                    }
+                }
+            )
+            if (status === 200 || 201 || 204) {
+                onCloseAddModal();
+                toast.success(
+                    "Your todo is Added!.",
+                    {
+                        position: "bottom-center",
+                        duration: 1500,
+                        style: {
+                        backgroundColor: "black",
+                        color: "white",
+                        width: "fit-content",
+                        },
+                    }
+                )
+            }
+        } catch (error) {
+            console.log(error)
+        } finally {
+            setIsUpdating(false);
+        }
+    }
 
     // update todos
     const onSubmitHandeller = async (evt: FormEvent<HTMLFormElement>) => {
@@ -136,6 +199,11 @@ const TodoList = () => {
             [name]: value,
         });
 
+        setTodoToAdd({
+            ...todoToAdd,
+            [name]: value,
+        });
+
         setErrors({
             ...errors,
             [name]: '',
@@ -149,10 +217,15 @@ const TodoList = () => {
             headers: {Authorization: `Bearer ${userData.jwt}`}
         }
     }); 
-    if (isLoading) return <h3>Loading ...</h3>
+    if (isLoading) return <div className="space-y-1">
+        {Array.from({length: 3}, (_, idx) => <TodoSkeleton key={idx}/>)}
+    </div>
     
     return (
         <div className="space-y-1">
+            <div className="flex justify-center mb-10">
+                <Button size={"sm"} variant={"default"} onClick={onOpenAddModal}>Post a new Todo</Button>
+            </div>
             {data.todos.length ? data.todos.map((todo: ITodo) => (
                 <div key={todo.id} className="flex items-center justify-between hover:bg-gray-100 duration-300 p-3 rounded-md even:bg-gray-100">
                     <p className="w-full font-semibold">{todo.id}- {todo.title}</p>
@@ -162,6 +235,20 @@ const TodoList = () => {
                     </div>
                 </div>
             )) : <h3> No Todos yet! </h3>}
+
+            {/* Add Modal */}
+            <Modal isOpen={isOpenAddModal} onClose={onCloseEditModal} title="Add Todos!">
+                <form className="space-y-3" onSubmit={onSubmitAddHandeller}> 
+                    <Input name="title" value={todoToAdd.title} onChange={onChangeHandeller}/>
+                    {errors.title && <InputErrorMsg msg={errors.title}/>}
+                    <Textarea name="description" value={todoToAdd.description} onChange={onChangeHandeller}/>
+                    {errors.description && <InputErrorMsg msg={errors.description}/>}
+                    <div className="flex items-center space-x-3">
+                        <Button fullWidth isLoading={isUpdating}>Add</Button>
+                        <Button fullWidth variant={"cancel"} onClick={onCloseAddModal}>Cancel</Button>
+                    </div>
+                </form>
+            </Modal>
 
             {/* Update Modal */}
             <Modal isOpen={isOpen} onClose={onCloseEditModal} title="Edit Todos!">
