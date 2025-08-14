@@ -86,7 +86,7 @@ const TodoList = () => {
 
         try {
             const {status} = await axiosInstance.post(`/todos`, 
-                {data: {title: todoToAdd.title, description: todoToAdd.description}},
+                {data: {title: todoToAdd.title, description: todoToAdd.description, user: [userData.user.id]}},
                 {
                     headers: {
                         Authorization: `Bearer ${userData.jwt}`
@@ -227,8 +227,9 @@ const TodoList = () => {
     
     return (
         <div className="space-y-1">
-            <div className="flex justify-center mb-10">
+            <div className="flex justify-center space-x-3 mb-10">
                 <Button size={"sm"} variant={"default"} onClick={onOpenAddModal}>Post a new Todo</Button>
+                <Button size={"sm"} variant={"default"}>Generate Todo</Button>
             </div>
             {data.todos.length ? data.todos.map((todo: ITodo) => (
                 <div key={todo.id} className="flex items-center justify-between hover:bg-gray-100 duration-300 p-3 rounded-md even:bg-gray-100">
