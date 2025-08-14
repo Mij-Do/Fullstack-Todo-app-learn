@@ -24,6 +24,7 @@ const TodoList = () => {
     const [isOpenDeleteModal, setIsOpenDeleteModal] = useState(false);
     const [isUpdating, setIsUpdating] = useState(false);
     const [todoToEdit, setTodoToEdit] = useState<ITodo>(defaultTodos);
+    const [queryVersion, setQueryVersion] = useState(1);
     const [todoToAdd, setTodoToAdd] = useState({
         title: "",
         description: "",
@@ -94,6 +95,7 @@ const TodoList = () => {
             )
             if (status === 200 || 201 || 204) {
                 onCloseAddModal();
+                setQueryVersion(prev => prev + 1);
                 toast.success(
                     "Your todo is Added!.",
                     {
@@ -141,6 +143,7 @@ const TodoList = () => {
             )
             if (status === 200) {
                 onCloseEditModal();
+                setQueryVersion(prev => prev + 1);
                 toast.success(
                     "Your todo is Updated!.",
                     {
@@ -173,6 +176,7 @@ const TodoList = () => {
             )
         if (status === 200 || 204) {
                 onCloseDeleteModal();
+                setQueryVersion(prev => prev + 1);
                 toast.success(
                     "Your todo is Removed!.",
                     {
@@ -211,7 +215,7 @@ const TodoList = () => {
     }
 
     const {isLoading, data} = useAuthQuery({
-        queryKey: ["todos", todoToEdit.documentId],
+        queryKey: ["todos", `${queryVersion}`],
         url: "/users/me?populate=todos",
         config: {
             headers: {Authorization: `Bearer ${userData.jwt}`}
