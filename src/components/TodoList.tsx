@@ -19,6 +19,7 @@ const TodoList = () => {
     }
     // states
     const [isOpen, setIsOpen] = useState(false);
+    const [isOpenDeleteModal, setIsOpenDeleteModal] = useState(false);
     const [isUpdating, setIsUpdating] = useState(false);
     const [todoToEdit, setTodoToEdit] = useState<ITodo>(defaultTodos);
     const [errors, setErrors] = useState({
@@ -39,6 +40,10 @@ const TodoList = () => {
         setTodoToEdit(defaultTodos);
         setIsOpen(false);
     }
+
+    const onOpenDeleteModal = () => setIsOpenDeleteModal(true);
+    const onCloseDeleteModal = () => setIsOpenDeleteModal(false);
+
 
     const onSubmitHandeller = async (evt: FormEvent<HTMLFormElement>) => {
         evt.preventDefault();
@@ -116,10 +121,12 @@ const TodoList = () => {
                     <p className="w-full font-semibold">1- {todo.title}</p>
                     <div className="flex items-center justify-end w-full space-x-3">
                         <Button size={"sm"} onClick={() => onOpenEditModal(todo)}>Edit</Button>
-                        <Button variant={"danger"} size={"sm"}>Remove</Button>
+                        <Button variant={"danger"} size={"sm"} onClick={onOpenDeleteModal}>Remove</Button>
                     </div>
                 </div>
             )) : <h3> No Todos yet! </h3>}
+
+            {/* Update Modal */}
             <Modal isOpen={isOpen} onClose={onCloseEditModal} title="Edit Todos!">
                 <form className="space-y-3" onSubmit={onSubmitHandeller}> 
                     <Input name="title" value={todoToEdit.title} onChange={onChangeHandeller}/>
@@ -131,6 +138,20 @@ const TodoList = () => {
                         <Button fullWidth variant={"cancel"} onClick={onCloseEditModal}>Cancel</Button>
                     </div>
                 </form>
+            </Modal>
+            {/* Delete Modal */}
+            <Modal 
+                isOpen={isOpenDeleteModal} 
+                onClose={onCloseDeleteModal} 
+                title="Delete Todos!"
+                description="A simple modal that appears to confirm the removal of a todo item, showing the task details with two buttons: one to confirm deletion and one to cancel."
+                >
+                <div className="space-y-3"> 
+                    <div className="flex items-center space-x-3">
+                        <Button fullWidth variant={"danger"} isLoading={isUpdating}>Yes, Remove</Button>
+                        <Button fullWidth variant={"cancel"} onClick={onCloseDeleteModal}>Cancel</Button>
+                    </div>
+                </div>
             </Modal>
         </div>
     )

@@ -3,12 +3,13 @@ import { type ReactNode } from 'react';
 
 interface IProps {
     title?: string;
+    description?: string;
     children: ReactNode;
     isOpen: boolean; 
     onClose: () => void;
 }
 
-const Modal = ({isOpen, onClose, title, children}: IProps) => {
+const Modal = ({isOpen, onClose, title, description, children}: IProps) => {
 
 
 return (
@@ -25,6 +26,9 @@ return (
                     </DialogTitle>
 
                     <div className='mt-4'>
+                        <div className='mb-4 text-indigo-500'>
+                            {description}
+                        </div>
                         {children}
                     </div>
                 </DialogPanel>
